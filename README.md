@@ -1,65 +1,154 @@
-1. Data Processing
-Data Loading and Concatenation
+# Spark Bus Equity Project: Midterm Report
 
-A list of CSV files named MBTA-Bus-Arrival-Departure-Times_2024-XX.csv (where XX indicates the month) is gathered using glob.
+### [Insert YouTube Midterm Presentation Link Here]
 
-Each file is loaded into a pandas DataFrame (read_csv).
+---
 
-In each file, date and time columns are parsed and converted to appropriate data types:
+## Table of Contents
+- Deliverables Overview  
+- Datasets  
+- Data Preprocessing  
+- Visualizations  
+- Data Modeling/Training & Results  
+- Future Steps  
+- Project Files  
 
-service_date is converted to datetime.
+---
 
-scheduled and actual columns are converted to time objects, then stored in new columns such as scheduled_time and actual_time.
+## Deliverables Overview
 
-These DataFrames are concatenated into a single df_merged DataFrame.
+Our midterm deliverables include:
+- Preprocessed and visualized ridership and delay trends  
+- Data exploration of delays across target and non-target routes  
+- A Random Forest regression model that predicts daily on-time performance per route for September 2024, which we plan to continue improving  
 
-Initial Inspection
+---
 
-The merged DataFrame is inspected with .info() and .head() to check the data types and general structure.
+## Datasets
 
-Basic cleaning/checking steps:
+**Ridership Dataset:**
+- [Monthly Ridership by Mode and Line (2018–2024)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-and-line/explore)  
+- [Monthly Ridership by Mode Archive (2017–2018)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-archive/explore)
 
-Ensuring service_date is a proper datetime column.
+**Arrival/Departure Dataset:**
+- [MBTA Bus Arrival Departure Times 2024](https://mbta-massdot.opendata.arcgis.com/datasets/96c77138c3144906bce93d0257531b6a/about)  
+- Future work may include exploring prior years of this dataset to enable longer-term comparisons.
 
-Ensuring numeric columns (e.g., delay_minutes) are correctly typed.
+---
 
-Creating Key Columns
+## Data Preprocessing
 
-on_time_flag: A boolean column indicating whether a bus departure was on time (delay_minutes <= 5) or not.
+**Ridership Dataset:**
+- Combined two separate CSVs, already cleaned in preprocess_bus_data.ipynb, (2017–2018 and 2018–2024) after aligning schemas  
+- Standardized datetime formats using `pd.to_datetime`  
+- Filtered by `daytype == 'Total'` to ensure full-month comparisons  
+- Extracted and cleaned `year`, `date`, `route_or_line`, and ridership columns for analysis  
 
-year_month: Derived from service_date as a period (e.g., "2024-01", "2024-02") for time-based splitting.
+**Arrival/Departure Dataset:**
+- Parsed multiple monthly CSVs using `glob` and merged into a single DataFrame  
+- Converted scheduled/actual time strings into time objects and minutes since midnight  
+- Engineered delay metrics (`delay_minutes`, `on_time_flag`)  
+- Identified start and end of trips, computed actual travel times  
+- Aggregated to daily averages by route and encoded route identifiers for modeling  
 
-day_of_week: Extracted from service_date (0=Monday, 6=Sunday).
+---
 
-Splitting Data by Time Periods
+## Visualizations
 
-A time-based split is used for training vs. testing:
+### A. Ridership Analysis  
+Visualizations help answer:  
+- What is the ridership per bus route?  
+- How has this changed from pre-pandemic to post-pandemic?
 
-Training: January–August 2024
+Generated using `matplotlib`, `seaborn`, and groupby aggregations.
 
-Testing: September 2024
+#### Key Visuals:
 
-Masks (train_mask, test_mask) are created using the year_month column.
+**1. Annual Ridership Totals (Bus vs. Silver Line)**
+- Drop in ridership during COVID-19 years  
+- Recovery beginning in 2023–2024  
 
-df_train and df_test DataFrames are created by filtering with these masks.
+**2. Percent Change (Pre vs Post Pandemic)**
+- Compared 2017–2019 with 2023–2024  
+- Bus ridership lags behind Silver Line in recovery  
 
-Aggregation to Daily Route-Level
+**3. Monthly Ridership Trends**
+- Seasonal variation and longer-term recovery patterns  
 
-Data is grouped by ['route_id_str', 'service_date'].
+_Embedded Example:_  
+![Monthly Ridership Trends](visuals/monthly_ridership_trends.png)  
+![Percent Change](visuals/ridership_percent_change_pre_post_pandemic.png)
 
-Aggregations:
+---
 
-Mean on-time percentage (on_time_flag → on_time_pct)
+### B. Delay and Travel Time Analysis  
+Visualizations help answer:
+- What are the end-to-end travel times for each route?  
+- What is the average delay citywide?  
+- Are target routes more delayed?  
+- Which routes are late most often?
 
-Mean delay_minutes
+#### Key Findings:
+- Citywide average delay: ~4.29 minutes  
+- Target routes (e.g., 22, 29, 15, etc.) average delay: ~5.74 minutes  
+- Top delayed routes have >40% of trips arriving over 5 minutes late  
 
-First/unique day_of_week
+_Embedded Example:_  
+![Top 10 Late Routes](visuals/2024_top_10_routesby%oflate_trips.jpg)
 
-Encodes route_id_str into a numeric route_cat (via astype('category').cat.codes) so that it can be used as a model feature.
+---
 
-Result is a “daily” DataFrame where each row corresponds to a single date for a particular route.
+## Data Modeling/Training & Results
 
-Saving Preprocessed Data
+### Goal  
+Predict each bus route's daily on-time percentage for September 2024 using historical delay data from January through August 2024.
 
-Optional code to save the combined data to a CSV (e.g., MBTA_Bus_2024_Preprocessed.csv).
+### Features Used
+- `route_cat`: Encoded route identifier  
+- `day_of_week`: Day of the week (0 = Monday, ..., 6 = Sunday)  
+- `delay_minutes`: Average delay for the route on a given day  
+
+### Model Pipeline
+- Aggregated daily route-level data with engineered features  
+- Trained a `RandomForestRegressor` with 100 estimators and fixed random seed  
+- Performed two evaluations: one using a random split, and one using a time-based split (Jan–Aug 2024 to predict Sept 2024)
+
+### Results
+
+**Evaluation 1 (Random Split for Demo):**
+- RMSE: **0.111**
+- R²: **0.565**
+
+**Evaluation 2 (Realistic Time-Based - Sept 2024 Prediction):**
+- RMSE: **0.132**
+- R²: **0.307**
+
+The **time-based RMSE of 0.132** means that our model’s daily prediction is typically within ~13.2% of the actual on-time percentage. While R² is lower here, that’s expected due to the more realistic setting and potential non-linear delay behavior.
+
+We plan to ontinue refining the model by adding additional features, optimizing hyperparameters, improving robustness, and experimenting with different model types.
+
+---
+
+## Future Steps
+
+- Engineer new features (e.g., weather, time of day, event markers)  
+- Expand the dataset to include multiple years and possibly predicting on additional months  
+- Experiment with other models such as XGBoost or Gradient Boosting  
+- Perform hyperparameter tuning and error analysis  
+- Evaluate with additional metrics beyond RMSE (e.g., MAE, MAPE, classification accuracy if reframed)  
+
+---
+
+## Project Files
+
+- `on_time_prediction.ipynb`: Machine learning modeling and evaluation  
+- `merge_mbta.ipynb`: Delay dataset preprocessing, ML pipeline, and exploratory visuals, some code also found in `on_time_prediction.ipynb` 
+- `analyze_ridership_change.ipynb`: Ridership dataset visualization + some preprocessing
+- `cleaned_data/combine_cleaned_bus_data.ipynb`: Main preprocessing for ridership dataset 
+- `cleaned_data/`: Includes preprocessed CSVs  
+- `visuals/`: Contains plots and figures referenced in this report  
+- `tables/`: Supplementary summary tables  
+- `README.md`: This midterm report  
+
+
 
