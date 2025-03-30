@@ -122,9 +122,9 @@ Predict each bus route's daily on-time percentage for September 2024 using histo
 - RMSE: **0.132**
 - R²: **0.307**
 
-The **time-based RMSE of 0.132** means that our model’s daily prediction is typically within ~13.2% of the actual on-time percentage. While R² is lower here, that’s expected due to the more realistic setting and potential non-linear delay behavior.
+The **time-based RMSE of 0.132** means that our model’s daily prediction is typically within ~13.2% of the actual on-time percentage. While R² is lower here, that’s expected due to the more realistic setting and potential non-linear delay behavior. These early results suggest the model is capturing some meaningful patterns in delay behavior, but there is still a lot of room for improvement with additional features and tuning.
 
-We plan to ontinue refining the model by adding additional features, optimizing hyperparameters, improving robustness, and experimenting with different model types.
+We plan to continue refining the model by adding additional features, optimizing hyperparameters, and experimenting with different model types.
 
 ---
 
