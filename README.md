@@ -88,9 +88,9 @@ Visualizations help answer:
 - Which routes are late most often?
 
 #### Key Findings:
-- Citywide average delay: ~4.29 minutes  
-- Target routes (e.g., 22, 29, 15, etc.) average delay: ~5.74 minutes  
-- Top delayed routes have >40% of trips arriving over 5 minutes late  
+- Citywide average delay: -0.76 minutes (0.76 minute early)  
+- Target routes (e.g., 22, 29, 15, etc.) average delay: -1.19 minutes (1.19 minute early)  
+- Top delayed routes have >45% of trips arriving over 5 minutes late  
 
 _Example Visual:_  
 ![Average Bus Delays in 2024](visuals/2024_avg_delay.jpg)
