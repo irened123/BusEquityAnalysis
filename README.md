@@ -93,7 +93,7 @@ Visualizations help answer:
 - Top delayed routes have >40% of trips arriving over 5 minutes late  
 
 _Example Visual:_  
-![Average Bus Delays in 2024](visuals/2024_average_delay.jpg)
+![Average Bus Delays in 2024](visuals/2024_avg_delay.jpg)
 
 ---
 
