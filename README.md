@@ -29,6 +29,7 @@ Our midterm deliverables include:
 **Ridership Dataset:**
 - [Monthly Ridership by Mode and Line (2018–2024)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-and-line/explore)  
 - [Monthly Ridership by Mode Archive (2017–2018)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-archive/explore)
+- Note that the Silver Line, featured in the dataset, is also system of bus routes. 
 
 **Arrival/Departure Dataset:**
 - [MBTA Bus Arrival Departure Times 2024](https://mbta-massdot.opendata.arcgis.com/datasets/96c77138c3144906bce93d0257531b6a/about)  
