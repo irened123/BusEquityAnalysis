@@ -75,9 +75,8 @@ Generated using `matplotlib`, `seaborn`, and groupby aggregations.
 **3. Monthly Ridership Trends**
 - Seasonal variation and longer-term recovery patterns  
 
-_Embedded Example:_  
+_Example Visual:_  
 ![Monthly Ridership Trends](visuals/monthly_ridership_trends.png)  
-![Percent Change](visuals/ridership_percent_change_pre_post_pandemic.png)
 
 ---
 
@@ -93,8 +92,8 @@ Visualizations help answer:
 - Target routes (e.g., 22, 29, 15, etc.) average delay: ~5.74 minutes  
 - Top delayed routes have >40% of trips arriving over 5 minutes late  
 
-_Embedded Example:_  
-![Top 10 Late Routes](visuals/2024_top_10_routesby%oflate_trips.jpg)
+_Example Visual:_  
+![Average Bus Delays in 2024](visuals/2024_average_delay.jpg)
 
 ---
 
