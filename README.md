@@ -1,4 +1,4 @@
-# Spark Bus Equity Project: Midterm Report
+# Spark! Bus Equity Project: Midterm Report
 
 ### [Insert YouTube Midterm Presentation Link Here]
 
