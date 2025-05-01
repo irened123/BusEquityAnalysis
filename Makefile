@@ -42,3 +42,7 @@ run_model:
 # 5️⃣ run everything end-to-end
 run_all: run_merge run_model
 	@echo "🏁  All notebooks completed"
+
+test: download_data        # ensure data present, then…
+	pytest -q              
+
