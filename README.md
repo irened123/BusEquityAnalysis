@@ -15,6 +15,25 @@
 
 ---
 
+
+Using the Makefile:
+
+# one-time environment setup
+make setup
+
+# download 6 GB cleaned dataset
+make download_data
+
+# run merge notebook alone
+make run_merge
+
+# run model notebook alone
+make run_model
+
+# full pipeline (merge ➜ model)
+make run_all
+
+
 ## Deliverables Overview
 
 Our midterm deliverables include:
