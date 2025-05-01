@@ -1,15 +1,17 @@
 name: bus-equity-env
 channels:
-  - defaults
   - conda-forge
+  - defaults
 dependencies:
   - python=3.9
-  - pandas
-  - numpy
-  - scikit-learn
-  - xgboost
-  - matplotlib
-  - jupyter
+  - pandas=2.2.2
+  - numpy=1.24.4
+  - matplotlib=3.7.5
+  - seaborn=0.12.2
+  - scikit-learn=1.4.2
+  - xgboost=2.0.3
+  - shap=0.44.1
+  - jupyter=1.0.0
   - ipykernel
-  - gdown
-  - pytest         
+  - gdown=5.1.0
+  - pytest=8.1.1
