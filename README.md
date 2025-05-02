@@ -43,7 +43,7 @@ make test
 1. Fork the repository to your own GitHub account.
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/your-username/your-forked-repo.git
+   https://github.com/irened123/BusEquityAnalysis.git
    ```
 3. Install dependencies with `make setup`, create a new branch, commit your changes, and open a pull request.
 
@@ -60,7 +60,7 @@ Automated testing is configured using GitHub Actions in `.github/workflows/test.
 
 This project analyzes MBTA bus performance using ridership and bus arrival/departure data from 2017 to 2024.  In addition to exploring key questions—such as how ridership has recovered post-pandemic and which high-priority bus routes experience the most delays—we developed a machine learning model.
 
-The model aims to predict each route’s daily on-time percentage in September 2024 using historical delay trends, weather data, and calendar-based features. By understanding and forecasting these trends, transit agencies can make more informed decisions about scheduling, route planning, and equity-based service improvements. The project follows the complete data science lifecycle: data collection, cleaning, visualization, feature engineering, model training, and reproducibility.
+The model aims to predict each route’s daily on-time percentage in September 2024 using delay trends, weather data, and calendar-based features from January through August 2024. By understanding and forecasting these trends, transit agencies can make more informed decisions about scheduling, route planning, and equity-based service improvements. The project follows the complete data science lifecycle: data collection, cleaning, visualization, feature engineering, model training, and reproducibility.
 
 ---
 
@@ -71,7 +71,7 @@ Our final deliverables include:
 - Preprocessed and visualized ridership and delay trends  
 - A feature-engineered dataset incorporating weather conditions and calendar context  
 - An XGBoost regression model that predicts daily on-time performance per route for September 2024  
-  *(Additional modeling experiments include Random Forest Regressor, Linear Regression, and Dummy Regressor baselines)*  
+  (Additional modeling experiments include Random Forest Regressor, Linear Regression, and Dummy Regressor baselines)  
 - A reproducible pipeline including a Makefile, test suite, and SHAP-based model interpretability tools  
 
 ---
@@ -82,7 +82,7 @@ Our final deliverables include:
 
 - [Monthly Ridership by Mode and Line (2018–2024)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-and-line/explore)  
 - [Monthly Ridership by Mode Archive (2017–2018)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-archive/explore)  
-- *Note: The Silver Line is classified as a bus rapid transit (BRT) service and is included under "bus" in MBTA datasets.*
+- Note: The Silver Line is classified as a bus rapid transit (BRT) service and is included under "bus" in MBTA datasets.
 
 **Arrival/Departure Dataset:**
 
@@ -97,7 +97,7 @@ Our final deliverables include:
 - Combined and cleaned historical ridership data from 2017–2024  
 - Aligned schemas and standardized datetime formats  
 - Filtered by `daytype == 'Total'` for accurate monthly comparisons  
-- Produced: `combined_bus_silverline_2017_2024.csv`  
+- Produced: `cleaned_data/combined_bus_silverline_2017_2024.csv`  
 
 **Arrival/Departure Dataset:**
 
@@ -156,10 +156,7 @@ To predict each route's daily on-time percentage, we implemented a full supervis
   - `rush_hour_flag`: binary indicator for trips scheduled during peak commute hours (7–9AM, 4–6PM)
 
 - **Model Selection & Training:**  
-  We selected `XGBoostRegressor` for its ability to handle non-linear relationships and work well with tabular data.  
-  Training data spanned January–August 2024, with September 2024 held out as a realistic forecasting target.  
-  We used `GridSearchCV` with 3-fold CV to tune hyperparameters:  
-  `n_estimators`, `learning_rate`, `max_depth`, `subsample`, `colsample_bytree`.
+  We selected `XGBoostRegressor` for its ability to handle non-linear relationships and work well with tabular data. Training data spanned January–August 2024, with September 2024 held out as a realistic forecasting target. We used `GridSearchCV` with 3-fold CV to tune hyperparameters: `n_estimators`, `learning_rate`, `max_depth`, `subsample`, `colsample_bytree`.
 
 - **Modeling Assumptions:**  
   - Past short-term delays are predictive of future performance.  
@@ -193,8 +190,7 @@ To predict each route's daily on-time percentage, we implemented a full supervis
 
 
 - **Interpretability:**  
-  We used SHAP (SHapley Additive exPlanations) to understand the relative influence of each feature.  
-  Most important drivers of on-time performance included `delay_minutes`, `rolling_delay_3`, `route_cat`, `precipitation`, and `day_of_week`. These align with our expectations about weather and temporal patterns influencing bus delays.
+  We used SHAP (SHapley Additive exPlanations) to understand the relative influence of each feature. Important drivers of on-time performance included `delay_minutes`, `rolling_delay_3`, `route_cat`, `precipitation`, and `day_of_week`. These align with our expectations about weather and temporal patterns influencing bus delays.
 
 
 ---
@@ -208,8 +204,7 @@ This plot shows the most influential features based on XGBoost's internal F-scor
 
 ![Predicted vs. Actual On-Time Percentage](visuals/predicted_vs_actual.png)
 
-Most predictions follow the expected trend, but the model tends to underestimate performance at the very high end (e.g., near 1.0).  
-Still, this scatterplot indicates strong correlation between predicted and actual values.
+Most predictions follow the expected trend, but the model tends to underestimate performance at the very high end (e.g., near 1.0). Still, this scatterplot indicates strong correlation between predicted and actual values.
 
 ![Distribution of Residuals](visuals/residual_distribution.png)
 
