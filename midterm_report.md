@@ -141,14 +141,33 @@ We plan to continue refining the model by adding additional features, optimizing
 
 ## Project Files
 
-- `on_time_prediction.ipynb`: Machine learning modeling and evaluation  
-- `merge_mbta.ipynb`: Delay dataset preprocessing, ML pipeline, and exploratory visuals, some code also found in `on_time_prediction.ipynb` 
-- `analyze_ridership_change.ipynb`: Ridership dataset visualization + some preprocessing
-- `cleaned_data/combine_cleaned_bus_data.ipynb`: Main preprocessing for ridership dataset 
-- `cleaned_data/`: Includes preprocessed CSVs  
-- `visuals/`: Contains plots and figures referenced in this report  
-- `tables/`: Supplementary summary tables  
-- `README.md`: This midterm report  
+- `notebooks/modeling/on_time_xgboost_final.ipynb`  
+  Final machine learning notebook containing feature engineering, model training, evaluation, and SHAP interpretation.
+
+- `notebooks/data_analysis_preparation/arrival_departure_data_processing.ipynb`  
+  Processes January 2024 MBTA arrival/departure data, computes delays, creates exploratory visualizations, and creates aggregated metrics for modeling.
+
+- `notebooks/ridership/analyze_ridership_change.ipynb`  
+  Explores ridership trends from 2017–2024 and generates visualizations comparing Bus vs. Silver Line recovery.
+
+- `cleaned_data/`  
+  Contains cleaned and merged datasets used in all notebooks (e.g., `combined_bus_silverline_2017_2024.csv`).
+
+- `visuals/`  
+  Directory includes plots used and generated, including model evaluation visuals and exploratory figures.
+
+- `tests/test_basic.py`  
+  Basic test file to validate the presence and structure of the cleaned dataset.
+
+- `Makefile`  
+  Automates environment setup, data download, model execution, and testing using simple CLI commands.
+
+- `requirements.txt` and `environment.yml`  
+  Dependency files for setting up the Python environment via `pip` or `conda`.
+
+- `.github/workflows/test.yml`  
+  GitHub Actions configuration file to run automated tests on push or pull request.
+
 
 
 
