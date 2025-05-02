@@ -1,173 +1,163 @@
-# Spark! Bus Equity Project: Midterm Report
+# Spark! Bus Equity Project: Final Report
 
-### [https://youtu.be/y-iyZMFk6NQ]
+### [https://youtu.be/your-final-video-link]
 
 ---
 
-## Table of Contents
+## Table of Contents  
+- Makefile Instructions  
 - Deliverables Overview  
 - Datasets  
 - Data Preprocessing  
 - Visualizations  
 - Data Modeling/Training & Results  
+- Testing & Reproducibility  
 - Future Steps  
 - Project Files  
 
 ---
 
+## Using the Makefile
 
-Using the Makefile:
-
+```bash
 # one-time environment setup
 make setup
 
 # download 6 GB cleaned dataset
 make download_data
 
-# run merge notebook alone
-make run_merge
-
 # run model notebook alone
 make run_model
 
-# full pipeline (merge ➜ model)
-make run_all
-
+# run tests
+make test
 
 ## Deliverables Overview
 
-Our midterm deliverables include:
+Our final deliverables include:
+
 - Preprocessed and visualized ridership and delay trends  
-- Data exploration of delays across target and non-target routes  
-- A Random Forest regression model that predicts daily on-time performance per route for September 2024, which we plan to continue improving  
+- Feature-engineered dataset including weather and calendar context  
+- An XGBoost regression model that predicts daily on-time performance per route for September 2024  
+- Reproducible Makefile, test suite, and SHAP interpretability tools  
 
 ---
 
 ## Datasets
 
 **Ridership Dataset:**
+
 - [Monthly Ridership by Mode and Line (2018–2024)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-and-line/explore)  
-- [Monthly Ridership by Mode Archive (2017–2018)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-archive/explore)
-- Note that the Silver Line, featured in the dataset, is also system of bus routes. 
+- [Monthly Ridership by Mode Archive (2017–2018)](https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-archive/explore)  
+- *Note: Silver Line is a BRT system included in the bus ridership category.*
 
 **Arrival/Departure Dataset:**
-- [MBTA Bus Arrival Departure Times 2024](https://mbta-massdot.opendata.arcgis.com/datasets/96c77138c3144906bce93d0257531b6a/about)  
-- Future work may include exploring prior years of this dataset to enable longer-term comparisons.
+
+- [MBTA Bus Arrival Departure Times 2024](https://mbta-massdot.opendata.arcgis.com/datasets/96c77138c3144906bce93d0257531b6a/about)
 
 ---
 
 ## Data Preprocessing
 
 **Ridership Dataset:**
-- Combined two separate CSVs, already cleaned in preprocess_bus_data.ipynb, (2017–2018 and 2018–2024) after aligning schemas  
-- Standardized datetime formats using `pd.to_datetime`  
-- Filtered by `daytype == 'Total'` to ensure full-month comparisons  
-- Extracted and cleaned `year`, `date`, `route_or_line`, and ridership columns for analysis  
+
+- Combined and cleaned historical data from 2017–2024  
+- Aligned schemas and standardized datetime formats  
+- Filtered by `daytype == 'Total'` for accurate monthly comparisons  
+- Produced: `combined_bus_silverline_2017_2024.csv`  
 
 **Arrival/Departure Dataset:**
-- Parsed multiple monthly CSVs using `glob` and merged into a single DataFrame  
-- Converted scheduled/actual time strings into time objects and minutes since midnight  
-- Engineered delay metrics (`delay_minutes`, `on_time_flag`)  
-- Identified start and end of trips, computed actual travel times  
-- Aggregated to daily averages by route and encoded route identifiers for modeling  
+
+- Merged monthly CSVs from January 2024  
+- Parsed actual/scheduled times and computed delays  
+- Created `delay_minutes`, `on_time_flag`, and derived travel time metrics  
+- Aggregated to daily average values per route  
 
 ---
 
 ## Visualizations
 
-### A. Ridership Analysis  
-Visualizations help answer:  
-- What is the ridership per bus route?  
-- How has this changed from pre-pandemic to post-pandemic?
+### A. Ridership Analysis (`analyze_ridership_change.ipynb`)
 
-Generated using `matplotlib`, `seaborn`, and groupby aggregations.
+- **Annual Totals (2017–2024):** COVID impact and post-2023 recovery  
+- **Pre- vs. Post-Pandemic Comparison:** Silver Line recovered more strongly  
+- **Monthly Trends:** Seasonal variation with gradual post-pandemic growth  
 
-#### Key Visuals:
-
-**1. Annual Ridership Totals (Bus vs. Silver Line)**
-- Drop in ridership during COVID-19 years  
-- Recovery beginning in 2023–2024  
-
-**2. Percent Change (Pre vs Post Pandemic)**
-- Compared 2017–2019 with 2023–2024  
-- Bus ridership lags behind Silver Line in recovery  
-
-**3. Monthly Ridership Trends**
-- Seasonal variation and longer-term recovery patterns  
-
-_Example Visual:_  
-![Monthly Ridership Trends](visuals/monthly_ridership_trends.png)  
+*Example Visual:*  
+![Monthly Ridership Trends](visuals/monthly_ridership_trends.png)
 
 ---
 
-### B. Delay and Travel Time Analysis  
-Visualizations help answer:
-- What are the end-to-end travel times for each route?  
-- What is the average delay citywide?  
-- Are target routes more delayed?  
-- Which routes are late most often?
+### B. Delay and Travel Time Analysis (`merge_mbta.ipynb`)
 
-#### Key Findings:
-- Citywide average delay: -0.76 minutes (0.76 minute early)  
-- Target routes (e.g., 22, 29, 15, etc.) average delay: -1.19 minutes (1.19 minute early)  
-- Top delayed routes have >45% of trips arriving over 5 minutes late  
+- **Citywide average delay:** ~0.76 minutes early  
+- **Target routes (e.g. 22, 29):** ~1.19 minutes early  
+- **Top delayed routes:** >45% of trips over 5 minutes late  
 
-_Example Visual:_  
+Visualizations include histograms, route comparisons, and average travel times  
+
+*Example Visual:*  
 ![Average Bus Delays in 2024](visuals/2024_avg_delay.jpg)
 
 ---
 
 ## Data Modeling/Training & Results
 
-### Goal  
-Predict each bus route's daily on-time percentage for September 2024 using historical delay data from January through August 2024.
+### Goal
 
-### Features Used
-- `route_cat`: Encoded route identifier  
-- `day_of_week`: Day of the week (0 = Monday, ..., 6 = Sunday)  
-- `delay_minutes`: Average delay for the route on a given day  
-
-### Model Pipeline
-- Aggregated daily route-level data with engineered features  
-- Trained a `RandomForestRegressor` with 100 estimators and fixed random seed  
-- Performed two evaluations: one using a random split, and one using a time-based split (Jan–Aug 2024 to predict Sept 2024)
-
-### Results
-
-**Evaluation 1 (Random Split for Demo):**
-- RMSE: **0.111**
-- R²: **0.565**
-
-**Evaluation 2 (Realistic Time-Based - Sept 2024 Prediction):**
-- RMSE: **0.132**
-- R²: **0.307**
-
-The **time-based RMSE of 0.132** means that our model’s daily prediction is typically within ~13.2% of the actual on-time percentage. While R² is lower here, that’s expected due to the more realistic setting and potential non-linear delay behavior. These early results suggest the model is capturing some meaningful patterns in delay behavior, but there is still a lot of room for improvement with additional features and tuning.
-
-We plan to continue refining the model by adding additional features, optimizing hyperparameters, and experimenting with different model types.
+Predict the **on-time percentage** (defined as % of trips ≤5 min late) for each MBTA bus route per day in **September 2024**.
 
 ---
 
-## Future Steps
+### Final Model
 
-- Engineer new features (e.g., weather, time of day, event markers)  
-- Expand the dataset to include multiple years and possibly predicting on additional months  
-- Experiment with other models such as XGBoost or Gradient Boosting  
-- Perform hyperparameter tuning and error analysis  
-- Evaluate with additional metrics beyond RMSE (e.g., MAE, MAPE, classification accuracy if reframed)  
+📄 `on_time_xgboost_final.ipynb`  
+Model: `XGBoostRegressor`
+
+**Features Used:**
+- `route_cat`, `day_of_week`, `week_of_year`  
+- `delay_minutes_scaled`, `rolling_delay_3_scaled`  
+- `temperature_max_scaled`, `precipitation_scaled`  
+- `is_raining`, `is_holiday`, `is_weekend`, `rush_hour_flag`
 
 ---
 
-## Project Files
+### Evaluation Results (Time-Based Split)
 
-- `on_time_prediction.ipynb`: Machine learning modeling and evaluation  
-- `merge_mbta.ipynb`: Delay dataset preprocessing, ML pipeline, and exploratory visuals, some code also found in `on_time_prediction.ipynb` 
-- `analyze_ridership_change.ipynb`: Ridership dataset visualization + some preprocessing
-- `cleaned_data/combine_cleaned_bus_data.ipynb`: Main preprocessing for ridership dataset 
-- `cleaned_data/`: Includes preprocessed CSVs  
-- `visuals/`: Contains plots and figures referenced in this report  
-- `tables/`: Supplementary summary tables  
-- `README.md`: This midterm report  
+**XGBoost Final Model:**
+- **MAE:** 0.1065  
+- **RMSE:** 0.1361  
+- **R²:** 0.2654  
+- **TimeSeries CV Avg R²:** 0.2918
+
+**Baselines:**
+- **Linear Regression R²:** –0.1851  
+- **Dummy Regressor R²:** –0.1126  
+
+---
+
+### SHAP Interpretability
+
+Most influential features:
+- `delay_minutes`  
+- `rolling_delay_3`  
+- `route_cat`  
+- `precipitation`  
+- `day_of_week`  
+
+---
+
+## Testing & Reproducibility
+
+Tests are provided in `tests/test_basic.py`. These verify:
+
+- ✅ The cleaned dataset exists in the correct location  
+- ✅ The dataset contains the expected columns
+
+Run tests via:
+
+```bash
+make test
 
 
 
