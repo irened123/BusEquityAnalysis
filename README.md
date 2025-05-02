@@ -15,6 +15,7 @@
 - Exploratory Visualizations: Ridership and Delay Insights
 - Data Modeling/Training and Results  
 - Model Evaluation Visualizations 
+- Project Files
 
 ---
 
@@ -215,6 +216,35 @@ Still, this scatterplot indicates strong correlation between predicted and actua
 The residuals are roughly normally distributed around 0, suggesting the model is generally unbiased, though slightly overconfident on some outliers.
 
 ---
+
+## Project Files
+
+- `notebooks/modeling/on_time_xgboost_final.ipynb`  
+  Final machine learning notebook containing feature engineering, model training, evaluation, and SHAP interpretation.
+
+- `notebooks/data_analysis_preparation/arrival_departure_data_processing.ipynb`  
+  Processes January 2024 MBTA arrival/departure data, computes delays, creates exploratory visualizations, and creates aggregated metrics for modeling.
+
+- `notebooks/ridership/analyze_ridership_change.ipynb`  
+  Explores ridership trends from 2017–2024 and generates visualizations comparing Bus vs. Silver Line recovery.
+
+- `cleaned_data/`  
+  Contains cleaned and merged datasets used in all notebooks (e.g., `combined_bus_silverline_2017_2024.csv`).
+
+- `visuals/`  
+  Directory of plots used and generated, including model evaluation visuals and exploratory figures.
+
+- `tests/test_basic.py`  
+  Basic test file to validate the presence and structure of the cleaned dataset.
+
+- `Makefile`  
+  Automates environment setup, data download, model execution, and testing using simple CLI commands.
+
+- `requirements.txt` and `environment.yml`  
+  Dependency files for setting up the Python environment via `pip` or `conda`.
+
+- `.github/workflows/test.yml`  
+  GitHub Actions configuration file to run automated tests on push or pull request.
 
 
 
