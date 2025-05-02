@@ -31,6 +31,7 @@ make run_model
 
 # run tests
 make test
+```
 
 ## Deliverables Overview
 
