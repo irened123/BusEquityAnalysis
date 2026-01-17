@@ -1,13 +1,20 @@
 import os
 import pandas as pd
 
-DATA_PATH = "cleaned_data/mbta_cleaned.csv"
-REQUIRED_COLS = ["service_date", "route_id", "actual_minutes"]
+DATA_PATH = "cleaned_data/combined_bus_silverline_2017_2024.csv"
+
+REQUIRED_COLS = [
+    "year",
+    "month_of_service",
+    "route_or_line",
+    "ridership_total",
+    "ridership_average"
+]
 
 def test_dataset_exists():
-    assert os.path.exists(DATA_PATH), "Dataset missing—did you run make download_data?"
+    assert os.path.exists(DATA_PATH), f"Dataset missing at {DATA_PATH}"
 
 def test_can_read_and_has_columns():
-    df = pd.read_csv(DATA_PATH, nrows=1000)  # read a tiny sample
+    df = pd.read_csv(DATA_PATH, nrows=100)
     for col in REQUIRED_COLS:
         assert col in df.columns, f"Column {col} not found in CSV"
